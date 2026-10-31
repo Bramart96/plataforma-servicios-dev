@@ -158,15 +158,19 @@ const Carousel = () => {
             <div
               key={idx}
               ref={idx === 0 ? cardRef : null}
-              className="flex-shrink-0 w-[270px] max-h-[720px] bg-white/30 rounded-lg rounded-b-3xl shadow-md flex flex-col items-center pt-5 gap-4 font-sans backdrop-blur-md relative"
+              className="flex-shrink-0 w-[270px] max-h-[720px]bg-[#111827] border border-purple-700/40 rounded-lg rounded-b-3xl shadow-md flex flex-col items-center pt-5 gap-4 font-sans backdrop-blur-md relative"
             >
               <img
                 src={card.img}
                 alt={`Foto de ${card.name}`}
                 className="w-[150px] h-[150px] object-cover rounded-full mb-2"
               />
-              <h3 className="text-black text-lg font-bold mt-1">{card.name}</h3>
-              <p className="text-black text-sm opacity-80 mb-2">{card.role}</p>
+              <h3 className="text-white text-lg font-bold mt-1">
+                {card.name}
+              </h3>
+              <p className="text-slate-300 text-sm mb-2">
+                {card.role}
+              </p>
               <div className="flex flex-col justify-around items-center my-2">
                 <button
                   className="my-2 px-5 py-2 bg-purple-700 text-white rounded font-bold text-sm shadow-md hover:bg-green-700 cursor-pointer transition"

@@ -1,12 +1,14 @@
 
-
 import { ThemeProvider } from "../contexts/ThemeContext";
-import '../styles/globals.css';
+import { CarritoProvider } from "../contexts/CarritoContext";
+import "../styles/globals.css";
 
 export default function App({ Component, pageProps }) {
   return (
     <ThemeProvider>
-      <Component {...pageProps} />
+      <CarritoProvider>
+        <Component {...pageProps} />
+      </CarritoProvider>
     </ThemeProvider>
   );
 }

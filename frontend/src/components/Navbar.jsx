@@ -33,7 +33,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   /* Variables aux-Theme */
-  const [isSmallScreen, setisSmallScreen] = useState(window.innerWidth < 1400);
+  const [isSmallScreen, setisSmallScreen] = useState(false);
   const { darkMode } = useContext(ThemeContext);
   const darkModeItemsList = darkMode
     ? "text-[rgb(203,101,224)"
@@ -115,9 +115,9 @@ const Navbar = () => {
     <>
       <div
         className={`
-                w-full h-[120px] sticky top-0 z-50 flex items-center 
-                justify-between px-5 transition-all 
-                duration-400 
+                w-full h-[120px] sticky top-0 z-50 flex items-center
+                justify-between px-5 transition-all
+                duration-400
                 ${darkModeScroll}`}
       >
         {/*LOGO*/}
@@ -207,11 +207,21 @@ const Navbar = () => {
                 className="w-8 pt-1.5 cursor-pointer"
               />
             </button>
-            {contracts.length > 0 && (
-              <span className="absolute -top-2 -right-4 bg-red-400 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {contracts.length}
-              </span>
-            )}
+
+          {/* Contador de desarrolladores en el carrito */}
+          {carrito.length > 0 && (
+            <span
+              className="absolute -top-2 -right-2
+                        bg-purple-600 text-white
+                        text-xs font-bold
+                        min-w-5 h-5 px-1
+                        rounded-full
+                        flex items-center justify-center"
+            >
+              {carrito.length}
+            </span>
+          )}
+
           </div>
           {/*USUARIO*/}
           <div className="relative">
@@ -343,20 +353,24 @@ const Navbar = () => {
             </button>
           </div>
         )}
-        {/* CARRITO */}
+          {/* CARRITO */}
         {mostrarCarrito && (
           <div className="fixed top-[122px] inset-x-3 flex justify-center">
-            <div
-              className={`${darkModeBg} w-[80%] max-w-5xl max-h-[80vh] overflow-y-auto rounded-xl bg-zinc-900}`}
-            >
+            <div className="w-[80%] max-w-5xl max-h-[80vh] overflow-y-auto rounded-xl bg-[#090F1C] border border-[#334155] shadow-2xl">
               <button
                 className="flex justify-center p-2 w-full hover:cursor-pointer transition"
-                onClick={limpiar}
+                onClick={() => {
+                  limpiar();
+                  setMostrarCarrito(false);
+                }}
               >
-                X Limpar
+                Limpiar carrito
               </button>
+
               {carrito.length === 0 ? (
-                <p className="text-white text-center py-4">🛒 Carrito vacío</p>
+                <p className="text-white text-center py-4">
+                  Carrito vacío
+                </p>
               ) : (
                 <CardsCarrito />
               )}
