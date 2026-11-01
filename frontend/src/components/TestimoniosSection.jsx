@@ -31,9 +31,9 @@ const TestimoniosSlider = () => {
 
 
   return (
-    <section className=" text-white py-16 px-4">
-      <h2 className="text-2xl md:text-4xl font-bold text-center mb-4 text-[rgb(175,252,65)]">Testimonios</h2>
-      <h3 className="text-2xl text-center text-purple-500 mb-4 "> Vos podrias ser el siguiente!</h3>
+    <section className="od-text py-16 px-4">
+      <h2 className="od-accent text-2xl md:text-4xl font-bold text-center mb-4">Testimonios</h2>
+      <h3 className="od-muted text-xl text-center mb-6 "> Vos podrias ser el siguiente!</h3>
       <div className="overflow-hidden max-w-5x1 mx-auto">
         <motion.div
           ref={containerRef}
@@ -45,10 +45,10 @@ const TestimoniosSlider = () => {
           {testimonios.map((t) => (
             <div
               key={t.id}
-              className="min-w-[calc(50%/3)]  bg-white/30 p-6 rounded-2xl shadow-md"
+              className="od-card min-w-[calc(50%/3)] p-6 rounded-2xl shadow-md"
             >
-              <p className="text-3xl text-black leading-relaxed mb-4">“{t.texto}”</p>
-              <p className="text-2xl  text-purple-500 font-bold text-right">— {t.nombre}</p>
+              <p className="od-text text-lg md:text-xl leading-relaxed mb-4">“{t.texto}”</p>
+              <p className="od-accent text-sm md:text-base font-bold text-right">— {t.nombre}</p>
             </div>
           ))}
         </motion.div>

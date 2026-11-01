@@ -1,116 +1,103 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ThemeSwitch from "./ThemeSwitch";
-import { ThemeContext } from "../contexts/ThemeContext"; // importo para ajustar cambios en hovers, transitions,etc
 import { useCarrito } from "@/contexts/CarritoContext";
 import CountrySearchFilter from "./CountrySearchFilter";
 import About from "./About";
-import Link from 'next/link';
-import FormUser from "../pages/FormUser";
+import Link from "next/link";
 
 import CardsCarrito from "./CardsCarrito";
 
 const Navbar = () => {
-  /*carrito*/
-  const { mostrarCarrito, setMostrarCarrito, contracts } = useCarrito();
+  /* Contexto compartido del carrito */
+  const { mostrarCarrito, setMostrarCarrito, carrito, limpiar } = useCarrito();
 
   const toggleCarrito = () => {
     if (menuOpen) setMenuOpen(false);
     if (searchOpen) setSearchOpen(false);
     if (userOpen) setUserOpen(false);
+    if (aboutOpen) setAboutOpen(false);
     setMostrarCarrito((prev) => !prev);
   };
-  const { limpiar, carrito } = useCarrito();
 
   /*  DETECCION SCROLL - NAVBAR  */
   const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const handleScroll = () => {
-      setTimeout(() => {
-        setScrolled(window.scrollY > 50);
-      }, 100);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  /* Variables aux-Theme */
+  /* Paleta unificada mediante variables CSS */
   const [isSmallScreen, setisSmallScreen] = useState(false);
-  const { darkMode } = useContext(ThemeContext);
-  const darkModeItemsList = darkMode
-    ? "text-[rgb(203,101,224)"
-    : "text-[rgb(175,252,65)]";
-  const darkModeText = darkMode ? "text-zinc-700" : "text-white";
-  const darkModeBg = darkMode ? "bg-purple-100" : "bg-zinc-900";
-  const darkModeSep = darkMode ? "border-violet-200" : "border-zinc-700";
-  const darkModeHoverItems = darkMode
-    ? "text-[rgb(203,101,224)] hover:text-[rgb(175,252,65)]"
-    : "text-[rgb(175,252,65)] hover:text-[rgb(203,101,224)]";
-  const hoverBgColor = darkMode
-    ? "hover:bg-violet-300"
-    : "hover:bg-[rgb(40,40,40)]";
-  const darkModeScroll = !darkMode
-    ? scrolled
-      ? "bg-zinc-800"
-      : "bg-black"
-    : scrolled
-      ? "bg-zinc-200"
-      : "bg-stone-50";
+  const darkModeItemsList = "od-text";
+  const darkModeBg = "od-surface";
+  const darkModeSep = "od-border";
+  const darkModeHoverItems = "od-nav-link";
+  const hoverBgColor = "od-hover-surface";
+  const darkModeScroll = scrolled ? "od-navbar shadow-md" : "od-navbar";
 
   /*  ABOUT  */
   const [aboutOpen, setAboutOpen] = useState(false);
   const handleAboutClick = () => {
-    {
-      if (menuOpen) setMenuOpen(false);
-      if (userOpen) setUserOpen(false);
-      if (mostrarCarrito) setMostrarCarrito(false);
-      setAboutOpen(!aboutOpen);
-    }
+    setMenuOpen(false);
+    setSearchOpen(false);
+    setUserOpen(false);
+    setMostrarCarrito(false);
+    setAboutOpen((prev) => !prev);
   };
 
   /*  MENU HAMBURGUESA   */
   const [menuOpen, setMenuOpen] = useState(false);
   const HandleMenuOpen = () => {
-    //Si estoy en mobile y el buscador esta abierto,
-    //lo cierro primero, y luego alterno (abro o cierro) el menú hamburguesa.
-    // Siempre cerrar los otros dos
-    if (searchOpen) setSearchOpen(false);
-    if (userOpen) setUserOpen(false);
-    if (mostrarCarrito) setMostrarCarrito(false);
-    // SWITCHEAR EL MENU
-    setMenuOpen(!menuOpen);
+    setSearchOpen(false);
+    setUserOpen(false);
+    setAboutOpen(false);
+    setMostrarCarrito(false);
+    setMenuOpen((prev) => !prev);
   };
   /*  BUSQUEDA  */
   const [searchOpen, setSearchOpen] = useState(false);
   const handleSearchClick = () => {
-    {
-      //misma filosofia
-      if (menuOpen) setMenuOpen(false);
-      if (userOpen) setUserOpen(false);
-      if (mostrarCarrito) setMostrarCarrito(false);
-      setSearchOpen(!searchOpen);
-    }
+    setMenuOpen(false);
+    setUserOpen(false);
+    setAboutOpen(false);
+    setMostrarCarrito(false);
+    setSearchOpen((prev) => !prev);
   };
-
   /*  MENU DE USUARIO  */
   const [userOpen, setUserOpen] = useState(false);
   const handleUserClick = () => {
-    if (menuOpen || searchOpen || mostrarCarrito) {
-      setMenuOpen(false);
-      setSearchOpen(false);
-      setMostrarCarrito(false);
-      setTimeout(() => setUserOpen(true), 200);
-    } else {
-      setUserOpen(!userOpen);
-    }
+    const shouldOpen = !userOpen;
+    setMenuOpen(false);
+    setSearchOpen(false);
+    setAboutOpen(false);
+    setMostrarCarrito(false);
+    setUserOpen(shouldOpen);
   };
 
+  // Cierra solo los paneles; no elimina productos ni registra acciones.
+  const closePanels = useCallback(() => {
+    setMenuOpen(false);
+    setSearchOpen(false);
+    setUserOpen(false);
+    setAboutOpen(false);
+    setMostrarCarrito(false);
+  }, [setMostrarCarrito]);
   /*MEDIA QUERY < 1400 BREAKPOINT */
   useEffect(() => {
     const handleResize = () => {
       setisSmallScreen(window.innerWidth < 1400);
     };
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  /* Cerrar paneles cuando se desplaza la página */
+  useEffect(() => {
+    const handlePageScroll = () => {
+      setScrolled(window.scrollY > 50);
+      closePanels();
+    };
+
+    window.addEventListener("scroll", handlePageScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handlePageScroll);
+  }, [closePanels]);
+
   return (
     <>
       <div
@@ -119,19 +106,20 @@ const Navbar = () => {
                 justify-between px-5 transition-all
                 duration-400
                 ${darkModeScroll}`}
+        onMouseLeave={closePanels}
       >
         {/*LOGO*/}
         {!isSmallScreen ? (
           <div className="flex flex-col items-center justify-center gap-1 shrink-0 pr-4">
             <img src="/img/logo_proyect.png" alt="Logo" className="w-15" />
-            <span className="text-[rgbrgb(203,101,224)] font-semibold whitespace-nowrap text-xl">
+            <span className="od-accent font-semibold whitespace-nowrap text-xl">
               OriginDev
             </span>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center gap-1 shrink-0 pr-4">
             <img src="/img/logo_proyect.png" alt="Logo" className="w-10" />
-            <span className="text-[rgb(203,101,224)] font-semibold whitespace-nowrap text-lg">
+            <span className="od-accent font-semibold whitespace-nowrap text-lg">
               OriginDev
             </span>
           </div>
@@ -139,45 +127,30 @@ const Navbar = () => {
 
         {/* NAV-ITEMS */}
         {!isSmallScreen && (
-          <nav>
-            {
-              <ul className="flex font-bold flex-wrap justify-center items-center gap-6 whitespace-nowrap text-2xl">
-                {[
-                  { label: "Developers", id: "devs" },
-                  { label: "Testimonios", id: "testimonios" },
-                  { label: "Contacto", id: "contacto" },
-
-                ].map((section) => (
-                  <li key={section.id}>
-                    <a
-                      href={`#${section.id}`}
-                      className={`${darkModeHoverItems}`}
-                    >
-                      {section.label}
-                    </a>
-                  </li>
-                ))}
+          <nav aria-label="Navegación principal">
+            <ul className="flex font-semibold flex-wrap justify-center items-center gap-7 whitespace-nowrap text-lg">
+              {[
+                { label: "Developers", id: "devs" },
+                { label: "Testimonios", id: "testimonios" },
+                { label: "Contacto", id: "contacto" },
+              ].map((section) => (
+                <li key={section.id}>
+                  <a href={`#${section.id}`} className={darkModeHoverItems}>
+                    {section.label}
+                  </a>
+                </li>
+              ))}
+              <li>
                 <button
-                      onClick={handleAboutClick}
-                      className={`${darkModeHoverItems} cursor-pointer`}
-                    >
-                      About
-                    </button>
-                    {aboutOpen && (
-                      <div
-                        className={`${darkModeBg} absolute top-[120px] left-0 w-full p-4 flex items-center gap-2`}
-                      >
-                        <About />
-                        <button
-                          onClick={handleAboutClick}
-                          className={`${darkModeItemsList} text-xl`}
-                        >
-                          ✖
-                        </button>
-                      </div>
-                    )}
-              </ul>
-            }
+                  type="button"
+                  onClick={handleAboutClick}
+                  className={`${darkModeHoverItems} cursor-pointer`}
+                  aria-expanded={aboutOpen}
+                >
+                  Sobre nosotros
+                </button>
+              </li>
+            </ul>
           </nav>
         )}
         {/* ICONOS Y MENU */}
@@ -185,7 +158,10 @@ const Navbar = () => {
 
           {/*LUPA*/}
           <button
+            type="button"
             onClick={handleSearchClick}
+            aria-label="Abrir o cerrar buscador"
+            aria-expanded={searchOpen}
             className="hover:scale-110 transition-transform relative"
           >
             <img
@@ -198,7 +174,10 @@ const Navbar = () => {
           {/*CARRITO*/}
           <div className="relative">
             <button
+              type="button"
               onClick={toggleCarrito}
+              aria-label="Abrir o cerrar carrito"
+              aria-expanded={mostrarCarrito}
               className="hover:scale-110 transition-transform relative"
             >
               <img
@@ -207,39 +186,30 @@ const Navbar = () => {
                 className="w-8 pt-1.5 cursor-pointer"
               />
             </button>
-
-          {/* Contador de desarrolladores en el carrito */}
-          {carrito.length > 0 && (
-            <span
-              className="absolute -top-2 -right-2
-                        bg-purple-600 text-white
-                        text-xs font-bold
-                        min-w-5 h-5 px-1
-                        rounded-full
-                        flex items-center justify-center"
-            >
-              {carrito.length}
-            </span>
-          )}
-
+            {carrito.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-purple-700 text-white text-xs font-bold min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
+                {carrito.length}
+              </span>
+            )}
           </div>
           {/*USUARIO*/}
           <div className="relative">
             <button
+              type="button"
               onClick={handleUserClick}
+              aria-label="Abrir o cerrar menú de usuario"
+              aria-expanded={userOpen}
               className="hover:scale-110 transition-transform"
             >
-              <a href="#">
-                <img
+              <img
                   src="/img/user_logo.png"
                   alt="User"
                   className="w-7 mt-1 cursor-pointer"
                 />
-              </a>
             </button>
             {userOpen && (
               <div
-                className={`${darkModeBg} absolute top-[50px] right-[-10] w-50 rounded-lg py-2 z-50 text-sm`}
+                className={`${darkModeBg} absolute top-[50px] right-0 w-50 rounded-lg py-2 z-50 text-sm`}
               >
                 {/* TRIANGULO */}
                 <div className="absolute -top-3 right-5 w-4 h-5 z-[-1]">
@@ -251,11 +221,7 @@ const Navbar = () => {
                   className={`flex justify-center gap-10 ${darkModeBg} border-b ${darkModeSep} pt-1 pb-2 space-y-[-1]`}
                 >
                   {/* TEMA ICON */}
-                  <button
-                    className={`${darkModeText} flex justify-end hover:scale-110 transition-transform`}
-                  >
-                    <ThemeSwitch />
-                  </button>
+                  <ThemeSwitch />
                   {/* MENSAJES */}
                   <button className="hover:scale-110 transition-transform">
                     <img
@@ -268,72 +234,76 @@ const Navbar = () => {
                 {/*TEXTO*/}
                 <ul className="flex flex-col text-center">
                   <li
-                    className={`px-4 py-2 font-semibold cursor-pointer transition-colors ${darkModeItemsList} ${hoverBgColor} ${darkModeHoverItems} active:bg-zinc-700`}
+                    className={`px-4 py-2 font-semibold cursor-pointer transition-colors ${darkModeItemsList} ${hoverBgColor} ${darkModeHoverItems} `}
                   >
-                    <Link href="/FormUser">
-                      <button>Login</button>
+                    <Link href="/FormUser" onClick={() => setUserOpen(false)}>
+                      Login
                     </Link>
                   </li>
-                  <li className="px-4 py-2 text-red-600 font-semibold cursor-pointer hover:bg-red-200 active:bg-zinc-700 transition-colors">
+                  <li className="px-4 py-2 text-red-600 font-semibold cursor-pointer hover:bg-red-200  transition-colors">
                     Salir
                   </li>
                 </ul>
               </div>
             )}
           </div>
-          {/* ABOUT*/}
-          {isSmallScreen && (
-            <button
-              onClick={handleAboutClick}
-              className="hover:scale-110 transition-transform"
-            >
-              <span className="text-2xl cursor-pointer"> ABOUT </span>
-            </button>
-          )}
-
           {/* BOTON HAMBURGUESA */}
           {isSmallScreen && (
             <button
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={menuOpen}
               onClick={HandleMenuOpen}
-              className={`${darkModeItemsList} text-3xl  pl-1}`}
+              type="button"
+              className={`${darkModeItemsList} text-3xl pl-1 cursor-pointer`}
             >
               {menuOpen ? "✖" : "☰"}
             </button>
           )}
         </div>
-        {/* MENU HAMBURGUESA - SOLO CELULAR */}
+        {/* MENU HAMBURGUESA - PANTALLAS PEQUEÑAS */}
         {isSmallScreen && menuOpen && (
           <div
-            className={`${darkModeBg} absolute top-[120px] text-xl left-0 w-full flex flex-col items-center py-4`}
+            className={`${darkModeBg} absolute top-[120px] left-0 w-full py-4 shadow-xl z-50`}
           >
-            {/* LISTA */}
-            <ul className="w-full">
+            <ul className="w-full text-lg">
               {[
                 { label: "Developers", id: "devs" },
                 { label: "Testimonios", id: "testimonios" },
                 { label: "Contacto", id: "contacto" },
               ].map((section) => (
-                <a href={`#${section.id}`} className={`${darkModeHoverItems}`}>
-                  <li
-                    key={section.id}
-                    className={`flex items-center justify-center p-6 w-full h-10 text-center ${hoverBgColor} transition-colors ${darkModeHoverItems}`}
+                <li key={section.id}>
+                  <a
+                    href={`#${section.id}`}
+                    onClick={() => setMenuOpen(false)}
+                    className={`block text-center w-full p-3 ${darkModeHoverItems} ${hoverBgColor}`}
                   >
                     {section.label}
-                  </li>
-                </a>
+                  </a>
+                </li>
               ))}
+              <li>
+                <button
+                  type="button"
+                  onClick={handleAboutClick}
+                  className={`block text-center w-full p-3 ${darkModeHoverItems} ${hoverBgColor} cursor-pointer`}
+                >
+                  Sobre nosotros
+                </button>
+              </li>
             </ul>
           </div>
         )}
-        {/* ABOUT  */}
-        {isSmallScreen && aboutOpen && (
+        {/* ABOUT: mismo panel en escritorio y móvil */}
+        {aboutOpen && (
           <div
-            className={`${darkModeBg} absolute top-[120px] left-0 w-full p-4 flex items-center gap-2`}
+            className={`${darkModeBg} absolute top-[120px] left-0 w-full p-4 flex items-center gap-2 shadow-xl z-50`}
           >
             <About />
             <button
+              type="button"
               onClick={handleAboutClick}
-              className={`${darkModeItemsList} text-xl`}
+              className={`${darkModeItemsList} text-xl cursor-pointer`}
+              aria-label="Cerrar Sobre nosotros"
             >
               ✖
             </button>
@@ -346,19 +316,24 @@ const Navbar = () => {
           >
             <CountrySearchFilter />
             <button
+              type="button"
               onClick={handleSearchClick}
-              className={`${darkModeItemsList} text-xl`}
+              className={`${darkModeItemsList} text-xl cursor-pointer`}
+              aria-label="Cerrar buscador"
             >
               ✖
             </button>
           </div>
         )}
-          {/* CARRITO */}
+        {/* CARRITO */}
         {mostrarCarrito && (
           <div className="fixed top-[122px] inset-x-3 flex justify-center">
-            <div className="w-[80%] max-w-5xl max-h-[80vh] overflow-y-auto rounded-xl bg-[#090F1C] border border-[#334155] shadow-2xl">
+            <div
+              className={`${darkModeBg} od-text w-[80%] max-w-5xl max-h-[80vh] overflow-y-auto rounded-xl shadow-2xl`}
+            >
               <button
-                className="flex justify-center p-2 w-full hover:cursor-pointer transition"
+                type="button"
+                className="od-accent flex justify-center p-2 w-full cursor-pointer transition hover:underline"
                 onClick={() => {
                   limpiar();
                   setMostrarCarrito(false);
@@ -366,11 +341,8 @@ const Navbar = () => {
               >
                 Limpiar carrito
               </button>
-
               {carrito.length === 0 ? (
-                <p className="text-white text-center py-4">
-                  Carrito vacío
-                </p>
+                <p className="od-text text-center py-4">🛒 Carrito vacío</p>
               ) : (
                 <CardsCarrito />
               )}

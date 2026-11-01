@@ -1,92 +1,80 @@
-import React, { useContext, useState } from "react";
-import { ThemeContext } from "@/contexts/ThemeContext";
+import { useState } from "react";
+
+const accordionData = [
+  {
+    title: "Nuestra Misión",
+    content:
+      "Somos una empresa comprometida con la excelencia, enfocados en brindar soluciones innovadoras que generen un impacto positivo en nuestros clientes y en la comunidad.",
+  },
+  {
+    title: "Nuestra Visión",
+    content:
+      "Ser reconocidos como líderes en nuestro sector, distinguidos por nuestra capacidad de innovación y por las relaciones duraderas que construimos con nuestros clientes.",
+  },
+  {
+    title: "Nuestros Valores",
+    content:
+      "Integridad, pasión por lo que hacemos, trabajo en equipo y mejora continua son los principios que guían cada una de nuestras acciones.",
+  },
+  {
+    title: "Qué Nos Diferencia",
+    content:
+      "Nuestro enfoque personalizado, la calidad de nuestros servicios y nuestro compromiso con resultados medibles nos distingue en el mercado.",
+  },
+];
 
 const About = () => {
-  /**** SWITCH THEME ****/
-  const { darkMode } = useContext(ThemeContext);
-  const darkModeTitleBg = darkMode
-    ? "bg-gray-400 hover:bg-zinc-900"
-    : "bg-zinc-900 hover:bg-gray-400";
-  const darkModeTitle = darkMode
-    ? "text-green-500 hover:text-violet-900"
-    : "text-violet-400 hover:text-green-600";
-    const darkModeCotentBg = darkMode
-    ? "bg-zinc-900"
-    : "bg-gray-400";
-    const darkModeContent = darkMode 
-    ? "text-violet-600" 
-    : "text-green-900";
-
   const [isMainOpen, setIsMainOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null);
 
-  const accordionData = [
-    {
-      title: "Nuestra Misión",
-      content:
-        "Somos una empresa comprometida con la excelencia, enfocados en brindar soluciones innovadoras que generen un impacto positivo en nuestros clientes y en la comunidad.",
-    },
-    {
-      title: "Nuestra Visión",
-      content:
-        "Ser reconocidos como líderes en nuestro sector, distinguidos por nuestra capacidad de innovación y por las relaciones duraderas que construimos con nuestros clientes.",
-    },
-    {
-      title: "Nuestros Valores",
-      content:
-        "Integridad, pasión por lo que hacemos, trabajo en equipo y mejora continua son los principios que guían cada una de nuestras acciones.",
-    },
-    {
-      title: "Qué Nos Diferencia",
-      content:
-        "Nuestro enfoque personalizado, la calidad de nuestros servicios y nuestro compromiso con resultados medibles nos distingue en el mercado.",
-    },
-  ];
-
   const toggleMainAccordion = () => {
-    setIsMainOpen(!isMainOpen);
-    if (!isMainOpen) {
-      setActiveIndex(null);
-    }
+    setIsMainOpen((wasOpen) => !wasOpen);
+    setActiveIndex(null);
   };
 
   const toggleSubAccordion = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
+    setActiveIndex((current) => (current === index ? null : index));
   };
 
   return (
-    <div className="max-w-full mx-auto mt-12 px-4">
-      <div className="rounded-[10px] overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
+    <section className="mx-auto w-full max-w-5xl px-2 py-4 sm:px-4" aria-label="Sobre nosotros">
+      <div className="od-card overflow-hidden rounded-2xl shadow-xl">
         <button
-          className={`px-8 py-6 cursor-pointer font-semibold text-xl flex justify-between items-center transition-all duration-300 ${darkModeTitle} ${darkModeTitleBg}`}
+          type="button"
+          className="od-text od-hover-surface flex w-full items-center justify-between gap-3 px-5 py-5 text-left text-lg font-semibold transition-colors sm:px-7"
           onClick={toggleMainAccordion}
           aria-expanded={isMainOpen}
+          aria-controls="od-about-details"
         >
-          ¿Querés saber más de nosotros?
+          <span>¿Querés saber más de nosotros?</span>
+          <span className="od-accent text-2xl" aria-hidden="true">
+            {isMainOpen ? "−" : "+"}
+          </span>
         </button>
 
         {isMainOpen && (
-          <div className="bg-[#f7fafc] w-full">
+          <div id="od-about-details" className="border-t od-border">
             {accordionData.map((item, index) => (
-              <div
-                key={index}
-                className={`border-b border-[#e2e8f0] last:border-b-0`}
-              >
+              <div key={item.title} className="border-b od-border last:border-b-0">
                 <button
-                  className={`w-full px-8 py-5 text-left text-[1.1rem] font-medium text-[#2d3748] flex justify-between items-center cursor-pointer transition-colors duration-200 ${darkModeTitleBg} ${darkModeTitle} `}
+                  type="button"
+                  className="od-text od-hover-surface flex w-full items-center justify-between gap-3 px-5 py-4 text-left font-medium transition-colors sm:px-7"
                   onClick={() => toggleSubAccordion(index)}
                   aria-expanded={activeIndex === index}
+                  aria-controls={`od-about-panel-${index}`}
                 >
-                  {item.title}
-                  <span className="text-[1.3rem] font-bold">
+                  <span>{item.title}</span>
+                  <span className="od-accent text-xl font-bold" aria-hidden="true">
                     {activeIndex === index ? "−" : "+"}
                   </span>
                 </button>
+
                 {activeIndex === index && (
-                  <div className={`px-8 py-6 ${darkModeCotentBg} ${darkModeContent} p-1 leading-relaxed border-l-4 border-green-600`}>
-                    <p className="m-0 text-justify whitespace-normal break-words">
-                      {item.content}
-                    </p>
+                  <div
+                    id={`od-about-panel-${index}`}
+                    className="od-profile px-5 py-5 leading-relaxed sm:px-7"
+                  >
+                    <p className="od-muted">{item.content}</p>
                   </div>
                 )}
               </div>
@@ -94,7 +82,7 @@ const About = () => {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

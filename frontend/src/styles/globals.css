@@ -1,22 +1,90 @@
 @import "tailwindcss";
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* OriginDev: paleta unificada, independiente de componentes */
+:root {
+  /* Tema oscuro predeterminado */
+  --od-bg: #0b1220;
+  --od-card: #19253a;
+  --od-header: #111827;
+  --od-profile: #243550;
+  --od-text: #f8fafc;
+  --od-muted: #cbd5e1;
+  --od-border: #334155;
+  --od-accent: #c4b5fd;
+  --od-button: #6d28d9;
+  --od-button-hover: #7c3aed;
+  --od-hover: #26364e;
 }
 
-/* light mode */
+/* Compatibilidad con ThemeContext.js: body.dark representa el tema claro */
+body.dark {
+  --od-bg: #f3f6fb;
+  --od-card: #ffffff;
+  --od-header: #ffffff;
+  --od-profile: #f1f5fb;
+  --od-text: #0f172a;
+  --od-muted: #475569;
+  --od-border: #dbe3ee;
+  --od-accent: #6d28d9;
+  --od-button: #6d28d9;
+  --od-button-hover: #5b21b6;
+  --od-hover: #ede9fe;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background-color:#050505;
-  color: #8f1fcf;
- 
+  background-color: var(--od-bg);
+  color: var(--od-text);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
-/* Dark mode */
-body.dark {
-  background-color: #ffffff;
-  color: #830cc4;
+.od-navbar {
+  background-color: var(--od-header);
+  color: var(--od-text);
+  border-bottom: 1px solid var(--od-border);
+}
+
+.od-card,
+.od-surface {
+  background-color: var(--od-card);
+  color: var(--od-text);
+  border: 1px solid var(--od-border);
+}
+
+.od-profile {
+  background-color: var(--od-profile);
+  color: var(--od-text);
+  border: 1px solid var(--od-border);
+}
+
+.od-text { color: var(--od-text); }
+.od-muted { color: var(--od-muted); }
+.od-accent { color: var(--od-accent); }
+.od-border { border-color: var(--od-border); }
+
+.od-nav-link {
+  color: var(--od-text);
+  transition: color 160ms ease;
+}
+.od-nav-link:hover,
+.od-nav-link:focus-visible {
+  color: var(--od-accent);
+}
+
+.od-hover-surface:hover {
+  background-color: var(--od-hover);
+}
+
+.od-button {
+  background-color: var(--od-button);
+  color: #ffffff;
+  transition: background-color 160ms ease;
+}
+.od-button:hover { background-color: var(--od-button-hover); }
+.od-button:focus-visible,
+.od-nav-link:focus-visible {
+  outline: 2px solid var(--od-accent);
+  outline-offset: 3px;
 }

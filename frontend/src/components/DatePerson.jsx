@@ -120,7 +120,7 @@ function DatePerson({ userId }) {
     <>
       <div className="flex flex-col items-center justify-center">
         <FoldeButton label={`Ver Perfil`}>
-          <div className="flex bg-violet-900 p-4 rounded text-green-500 flex-col gap-2 rounded-b-2xl">
+          <div className="od-profile flex p-4 rounded-2xl flex-col gap-2 text-sm text-left">
             <h2 className="text-xl font-bold">{user.name} {user.lastname}</h2>
             <p>{user.miniBio}</p>
             <ul className="list-disc pl-5">
